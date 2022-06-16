@@ -8,6 +8,7 @@ const shooting = new Schema({
     name: String,
     location: [Number, Number],
   },
+  img: String,
 });
 
 export const Shooting = mongoose.model("shooting", shooting);
