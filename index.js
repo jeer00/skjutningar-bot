@@ -18,11 +18,12 @@ async function fetcher() {
   setInterval(async () => {
     const api = await fetch("https://polisen.se/api/events");
     const res = await api.json();
-
+    console.log(res);
     const shootings = res.filter((elem) => {
       return (
         elem.type === "Skottlossning" ||
-        elem.type === "Skottlossning, misstänkt"
+        elem.type === "Skottlossning, misstänkt" ||
+        elem.id == 346041
       );
     });
 
@@ -47,15 +48,16 @@ async function fetcher() {
     if (obj.length) {
       obj.map((elem) => {
         Shooting.create(elem);
+        console.log(elem);
         postTweet(elem);
       });
     }
-  }, 40000);
+  }, 2000);
 }
 
 async function postTweet(elem) {
-  const image = `https://maps.googleapis.com/maps/api/staticmap?center=${elem.location.location[0]},${elem.location.location[1]}zoom=6&size=400x400&markers=59.329324,18.068581&key=${process.env.MAPS_API_KEY}`;
-
+  const image = `https://maps.googleapis.com/maps/api/staticmap?center=${elem.location.location[0]},${elem.location.location[1]}&zoom=6&size=400x400&markers=${elem.location.location[0]},${elem.location.location[1]}&key=${process.env.MAPS_API_KEY}`;
+  console.log(image);
   async function downloadImage() {
     const response = await Axios({
       url: image,
