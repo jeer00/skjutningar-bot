@@ -8,6 +8,7 @@ const shooting = new Schema({
     name: String,
     location: [Number, Number],
   },
+  type: String,
   img: String,
 });
 

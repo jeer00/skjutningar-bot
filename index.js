@@ -22,8 +22,7 @@ async function fetcher() {
     const shootings = res.filter((elem) => {
       return (
         elem.type === "Skottlossning" ||
-        elem.type === "Skottlossning, misstänkt" ||
-        elem.id == 346041
+        elem.type === "Skottlossning, misstänkt"
       );
     });
 
@@ -34,8 +33,9 @@ async function fetcher() {
         return id === _id;
       });
     });
-    const obj = cleanShootings.map(({ datetime, location, id }) => {
+    const obj = cleanShootings.map(({ datetime, location, id, type }) => {
       return {
+        type,
         _id: id,
         date: new Date(datetime),
         location: { name: location.name, location: toGPS(location.gps) },
@@ -77,15 +77,11 @@ async function postTweet(elem) {
   const mediaId = await userClient.v1.uploadMedia(`${elem._id}.png`);
 
   const { data: createdTweet } = await userClient.v2.tweet({
-    text: `Flash: Skjutning i: ${elem.location.name}`,
+    text: `Flash: ${
+      elem.type === "Skottlossning, misstänkt" ? "misstänkt" : ""
+    } Skjutning i: ${elem.location.name}`,
     media: { media_ids: [mediaId] },
   });
 }
-
-// const response = await client.upload({
-//   image: image,
-//   title: "Map",
-//   description: "Map with a marker",
-// });
 
 fetcher();
